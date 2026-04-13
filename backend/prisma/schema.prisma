@@ -1,0 +1,519 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserStatus {
+  active
+  pending
+  suspended
+  deleted
+  rejected
+}
+
+enum DefaultLanguage {
+  en
+  am
+}
+
+enum ThemePreference {
+  light
+  dark
+}
+
+enum OrganizerType {
+  non_profit
+  corporate
+  individual
+  government
+}
+
+enum OrganizerVerificationStatus {
+  pending
+  approved
+  rejected
+}
+
+enum StaffAssignedRole {
+  staff
+  security
+}
+
+enum StaffStatus {
+  active
+  inactive
+}
+
+enum EventStatus {
+  draft
+  published
+  cancelled
+  completed
+}
+
+enum Visibility {
+  public
+  private
+}
+
+enum OrderStatus {
+  pending
+  paid
+  failed
+  cancelled
+  refunded
+}
+
+enum ReviewStatus {
+  visible
+  hidden
+  pending
+}
+
+enum PlatformFeePaymentStatus {
+  pending
+  completed
+  failed
+  cancelled
+}
+
+enum PayoutStatus {
+  pending
+  processing
+  completed
+  failed
+  cancelled
+}
+
+enum CheckInStatus {
+  valid
+  already_scanned
+  invalid
+}
+
+enum ReportScope {
+  organizer_user
+  platform_event
+}
+
+enum ReportStatus {
+  pending
+  resolved_ban
+  resolved_rejected
+}
+
+enum BanScope {
+  organizer_user
+  platform_organizer
+}
+
+enum BanStatus {
+  active
+  lifted
+}
+
+enum AppealStatus {
+  pending
+  approved
+  rejected
+}
+
+model Role {
+  id         Int      @id @default(autoincrement())
+  role_name  String   @unique @db.VarChar(50)
+  created_at DateTime @default(now())
+  users      User[]
+
+  @@map("roles")
+}
+
+model User {
+  id                          String               @id @db.VarChar(36)
+  role_id                     Int
+  full_name                   String               @db.VarChar(255)
+  email                       String               @unique @db.VarChar(255)
+  password_hash               String               @db.VarChar(255)
+  phone                       String?              @db.VarChar(20)
+  user_name                   String?              @db.VarChar(100)
+  status                      UserStatus           @default(active)
+  email_verified              Boolean              @default(false)
+  phone_verified              Boolean              @default(false)
+  default_language            DefaultLanguage      @default(en)
+  theme_preference            ThemePreference      @default(light)
+  last_login_at               DateTime?
+  created_at                  DateTime             @default(now())
+  updated_at                  DateTime             @updatedAt
+  role                        Role                 @relation(fields: [role_id], references: [id])
+  organizer_profile           OrganizerProfile?
+  approved_organizer_profiles OrganizerProfile[]   @relation("OrganizerApprovedBy")
+  organized_events            Event[]              @relation("OrganizerEvents")
+  reviews                     Review[]
+  review_replies              ReviewReply[]        @relation("OrganizerReplies")
+  orders                      Order[]
+  notifications               Notification[]
+  staff_member_user           StaffMember[]        @relation("StaffMemberUser")
+  staff_member_organizer      StaffMember[]        @relation("StaffMemberOrganizer")
+  check_in_logs               CheckInLog[]         @relation("CheckInStaff")
+  platform_fee_payments       PlatformFeePayment[]
+  payouts                     Payout[]
+  reported_reports            Report[]             @relation("ReportReporter")
+  subject_reports             Report[]             @relation("ReportSubject")
+  assigned_reports            Report[]             @relation("ReportAssignedOrganizer")
+  resolved_reports            Report[]             @relation("ReportResolvedBy")
+  subject_bans                Ban[]                @relation("BanSubject")
+  organizer_bans              Ban[]                @relation("BanOrganizer")
+  bans_created                Ban[]                @relation("BanCreatedBy")
+  bans_lifted                 Ban[]                @relation("BanLiftedBy")
+  appeals_submitted           Appeal[]             @relation("AppealAppellant")
+  appeals_decided             Appeal[]             @relation("AppealDecidedBy")
+
+  @@index([role_id])
+  @@index([status])
+  @@map("users")
+}
+
+model OrganizerProfile {
+  user_id                      String                      @id @db.VarChar(36)
+  organization_name            String                      @db.VarChar(255)
+  organization_type            OrganizerType
+  website_url                  String?                     @db.VarChar(255)
+  bio                          String?                     @db.Text
+  tax_id_number                String?                     @db.VarChar(100)
+  business_registration_number String?                     @db.VarChar(100)
+  social_linkedin              String?                     @db.VarChar(255)
+  social_instagram             String?                     @db.VarChar(255)
+  social_x                     String?                     @db.VarChar(255)
+  work_email                   String?                     @db.VarChar(255)
+  verification_status          OrganizerVerificationStatus @default(pending)
+  approved_by_admin_id         String?                     @db.VarChar(36)
+  approved_at                  DateTime?
+  created_at                   DateTime                    @default(now())
+  updated_at                   DateTime                    @updatedAt
+  user                         User                        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  approved_by_admin            User?                       @relation("OrganizerApprovedBy", fields: [approved_by_admin_id], references: [id])
+
+  @@index([verification_status])
+  @@map("organizer_profiles")
+}
+
+model EventCategory {
+  id         String   @id @db.VarChar(36)
+  name       String   @db.VarChar(100)
+  slug       String   @unique @db.VarChar(100)
+  created_at DateTime @default(now())
+  events     Event[]
+
+  @@map("event_categories")
+}
+
+model Event {
+  id              String          @id @db.VarChar(36)
+  organizer_id    String          @db.VarChar(36)
+  title           String          @db.VarChar(255)
+  category_id     String          @db.VarChar(36)
+  event_type      String          @db.VarChar(50)
+  description     String          @db.Text
+  banner_url      String?         @db.VarChar(2048)
+  status          EventStatus     @default(draft)
+  visibility      Visibility      @default(public)
+  is_featured     Boolean         @default(false)
+  start_datetime  DateTime
+  end_datetime    DateTime
+  city            String          @db.VarChar(100)
+  venue_name      String?         @db.VarChar(255)
+  address_line1   String?         @db.VarChar(255)
+  avg_rating      Decimal?        @default(0) @db.Decimal(3, 2)
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+  organizer       User            @relation("OrganizerEvents", fields: [organizer_id], references: [id])
+  category        EventCategory   @relation(fields: [category_id], references: [id])
+  ticket_types    TicketType[]
+  reviews         Review[]
+  staff_members   StaffMember[]
+  digital_tickets DigitalTicket[]
+  check_in_logs   CheckInLog[]
+  order_items     OrderItem[]
+  reports         Report[]
+
+  @@index([organizer_id])
+  @@index([status])
+  @@index([is_featured])
+  @@map("events")
+}
+
+model TicketType {
+  id                 String          @id @db.VarChar(36)
+  event_id           String          @db.VarChar(36)
+  tier_name          String          @db.VarChar(100)
+  price              Decimal         @db.Decimal(10, 2)
+  currency           String          @default("ETB") @db.VarChar(3)
+  capacity           Int
+  remaining_quantity Int
+  benefits           String?         @db.Text
+  is_active          Boolean         @default(true)
+  event              Event           @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  digital_tickets    DigitalTicket[]
+  order_items        OrderItem[]
+
+  @@index([event_id])
+  @@map("ticket_types")
+}
+
+model Review {
+  id          String        @id @db.VarChar(36)
+  user_id     String        @db.VarChar(36)
+  event_id    String        @db.VarChar(36)
+  rating      Int
+  review_text String?       @db.Text
+  status      ReviewStatus  @default(pending)
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  user        User          @relation(fields: [user_id], references: [id])
+  event       Event         @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  replies     ReviewReply[]
+  reports     Report[]
+
+  @@unique([user_id, event_id])
+  @@index([event_id])
+  @@map("reviews")
+}
+
+model ReviewReply {
+  id           String   @id @db.VarChar(36)
+  review_id    String   @db.VarChar(36)
+  organizer_id String   @db.VarChar(36)
+  reply_text   String   @db.Text
+  created_at   DateTime @default(now())
+  review       Review   @relation(fields: [review_id], references: [id], onDelete: Cascade)
+  organizer    User     @relation("OrganizerReplies", fields: [organizer_id], references: [id])
+
+  @@map("review_replies")
+}
+
+model Order {
+  id              String          @id @db.VarChar(36)
+  user_id         String          @db.VarChar(36)
+  order_number    String          @unique @db.VarChar(50)
+  subtotal        Decimal         @db.Decimal(10, 2)
+  service_fee     Decimal         @db.Decimal(10, 2)
+  total_amount    Decimal         @db.Decimal(10, 2)
+  status          OrderStatus     @default(pending)
+  payment_method  String?         @db.VarChar(50)
+  tx_ref          String?         @unique @db.VarChar(100)
+  paid_at         DateTime?
+  created_at      DateTime        @default(now())
+  user            User            @relation(fields: [user_id], references: [id])
+  digital_tickets DigitalTicket[]
+  order_items     OrderItem[]
+
+  @@index([user_id])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id             String     @id @db.VarChar(36)
+  order_id       String     @db.VarChar(36)
+  event_id       String     @db.VarChar(36)
+  ticket_type_id String     @db.VarChar(36)
+  quantity       Int
+  unit_price     Decimal    @db.Decimal(10, 2)
+  total_price    Decimal    @db.Decimal(10, 2)
+  created_at     DateTime   @default(now())
+  order          Order      @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  event          Event      @relation(fields: [event_id], references: [id])
+  ticket_type    TicketType @relation(fields: [ticket_type_id], references: [id])
+
+  @@index([order_id])
+  @@index([event_id])
+  @@index([ticket_type_id])
+  @@map("order_items")
+}
+
+model PlatformFeePayment {
+  id             String                   @id @db.VarChar(36)
+  user_id        String                   @db.VarChar(36)
+  amount         Decimal                  @db.Decimal(10, 2)
+  payment_method String?                  @db.VarChar(50)
+  status         PlatformFeePaymentStatus @default(pending)
+  tx_ref         String                   @unique @db.VarChar(100)
+  created_at     DateTime                 @default(now())
+  completed_at   DateTime?
+  user           User                     @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@map("platform_fee_payments")
+}
+
+model Payout {
+  id           String       @id @db.VarChar(36)
+  user_id      String       @db.VarChar(36)
+  amount       Decimal      @db.Decimal(10, 2)
+  method       String?      @db.VarChar(50)
+  details      String?      @db.Text
+  status       PayoutStatus @default(pending)
+  tx_ref       String       @unique @db.VarChar(100)
+  created_at   DateTime     @default(now())
+  completed_at DateTime?
+  user         User         @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@map("payouts")
+}
+
+model StaffMember {
+  id             String            @id @db.VarChar(36)
+  organizer_id   String            @db.VarChar(36)
+  event_id       String            @db.VarChar(36)
+  user_id        String?           @db.VarChar(36)
+  full_name      String            @db.VarChar(255)
+  email          String            @db.VarChar(255)
+  phone_number   String?           @db.VarChar(20)
+  assigned_role  StaffAssignedRole
+  staff_badge_id String?           @db.VarChar(100)
+  status         StaffStatus       @default(active)
+  created_at     DateTime          @default(now())
+  updated_at     DateTime          @updatedAt
+  organizer      User              @relation("StaffMemberOrganizer", fields: [organizer_id], references: [id])
+  event          Event             @relation(fields: [event_id], references: [id])
+  user           User?             @relation("StaffMemberUser", fields: [user_id], references: [id])
+
+  @@index([organizer_id])
+  @@index([event_id])
+  @@map("staff_members")
+}
+
+model DigitalTicket {
+  id             String       @id @db.VarChar(36)
+  order_id       String       @db.VarChar(36)
+  event_id       String       @db.VarChar(36)
+  ticket_type_id String       @db.VarChar(36)
+  ticket_code    String       @unique @db.VarChar(100)
+  is_used        Boolean      @default(false)
+  used_at        DateTime?
+  created_at     DateTime     @default(now())
+  order          Order        @relation(fields: [order_id], references: [id])
+  event          Event        @relation(fields: [event_id], references: [id])
+  ticket_type    TicketType   @relation(fields: [ticket_type_id], references: [id])
+  check_in_logs  CheckInLog[]
+
+  @@index([event_id])
+  @@map("digital_tickets")
+}
+
+model CheckInLog {
+  id            String        @id @db.VarChar(36)
+  ticket_id     String        @db.VarChar(36)
+  staff_id      String        @db.VarChar(36)
+  event_id      String        @db.VarChar(36)
+  check_in_time DateTime      @default(now())
+  status        CheckInStatus
+  ticket        DigitalTicket @relation(fields: [ticket_id], references: [id])
+  staff         User          @relation("CheckInStaff", fields: [staff_id], references: [id])
+  event         Event         @relation(fields: [event_id], references: [id])
+
+  @@index([event_id])
+  @@map("check_in_logs")
+}
+
+model Notification {
+  id         String    @id @db.VarChar(36)
+  user_id    String    @db.VarChar(36)
+  type       String    @db.VarChar(50)
+  title      String    @db.VarChar(255)
+  message    String    @db.Text
+  metadata   Json?
+  read_at    DateTime?
+  created_at DateTime  @default(now())
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, read_at])
+  @@map("notifications")
+}
+
+model Report {
+  id                 String       @id @db.VarChar(36)
+  scope              ReportScope
+  status             ReportStatus @default(pending)
+  reporter_id        String       @db.VarChar(36)
+  subject_user_id    String?      @db.VarChar(36)
+  organizer_id       String?      @db.VarChar(36)
+  event_id           String?      @db.VarChar(36)
+  review_id          String?      @db.VarChar(36)
+  reason             String       @db.VarChar(255)
+  details            String?      @db.Text
+  resolution_note    String?      @db.Text
+  resolved_by_id     String?      @db.VarChar(36)
+  resolved_at        DateTime?
+  created_at         DateTime     @default(now())
+  updated_at         DateTime     @updatedAt
+  reporter           User         @relation("ReportReporter", fields: [reporter_id], references: [id])
+  subject_user       User?        @relation("ReportSubject", fields: [subject_user_id], references: [id], onDelete: SetNull)
+  assigned_organizer User?        @relation("ReportAssignedOrganizer", fields: [organizer_id], references: [id], onDelete: SetNull)
+  event              Event?       @relation(fields: [event_id], references: [id], onDelete: SetNull)
+  review             Review?      @relation(fields: [review_id], references: [id], onDelete: SetNull)
+  resolved_by        User?        @relation("ReportResolvedBy", fields: [resolved_by_id], references: [id], onDelete: SetNull)
+
+  @@index([scope, status])
+  @@index([reporter_id, status])
+  @@index([organizer_id, status])
+  @@index([event_id, status])
+  @@index([subject_user_id, status])
+  @@map("reports")
+}
+
+model Ban {
+  id              String    @id @db.VarChar(36)
+  scope           BanScope
+  status          BanStatus @default(active)
+  subject_user_id String    @db.VarChar(36)
+  organizer_id    String?   @db.VarChar(36)
+  created_by_id   String    @db.VarChar(36)
+  lifted_by_id    String?   @db.VarChar(36)
+  reason          String    @db.VarChar(255)
+  details         String?   @db.Text
+  report_id       String?   @db.VarChar(36)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  lifted_at       DateTime?
+  subject_user    User      @relation("BanSubject", fields: [subject_user_id], references: [id])
+  organizer       User?     @relation("BanOrganizer", fields: [organizer_id], references: [id], onDelete: SetNull)
+  created_by      User      @relation("BanCreatedBy", fields: [created_by_id], references: [id])
+  lifted_by       User?     @relation("BanLiftedBy", fields: [lifted_by_id], references: [id], onDelete: SetNull)
+  appeals         Appeal[]
+
+  @@index([scope, status])
+  @@index([subject_user_id, status])
+  @@index([organizer_id, status])
+  @@index([report_id])
+  @@map("bans")
+}
+
+model Appeal {
+  id                String       @id @db.VarChar(36)
+  ban_id            String       @db.VarChar(36)
+  appellant_user_id String       @db.VarChar(36)
+  status            AppealStatus @default(pending)
+  message           String       @db.Text
+  decision_note     String?      @db.Text
+  decided_by_id     String?      @db.VarChar(36)
+  decided_at        DateTime?
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
+  ban               Ban          @relation(fields: [ban_id], references: [id], onDelete: Cascade)
+  appellant         User         @relation("AppealAppellant", fields: [appellant_user_id], references: [id])
+  decided_by        User?        @relation("AppealDecidedBy", fields: [decided_by_id], references: [id], onDelete: SetNull)
+
+  @@index([ban_id, status])
+  @@index([appellant_user_id, status])
+  @@index([status, created_at])
+  @@map("appeals")
+}
+
+/* Update for: feat(engine): build super admin dashboard UI with backend hooks */
+/* Update for: feat(engine): add rating and comment UI with star selector */
+/* Update for: feat(engine): implement anti-duplicate scan logic with row-locking */
+/* Update for: chore(engine): prepare engine module for final integration */
