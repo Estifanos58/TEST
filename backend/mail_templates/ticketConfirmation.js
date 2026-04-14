@@ -35,7 +35,7 @@ module.exports = ({ fullName, orderNumber, totalAmount, tickets = [], myTicketsU
       intro: 'Your digital tickets are available in your account.',
       bodyHtml,
       ctaLabel: 'Open My Tickets',
-      ctaUrl: myTicketsUrl || `${process.env.FRONTEND_URL || 'http://localhost:5173'}/my-tickets`,
+      ctaUrl: myTicketsUrl || `${process.env.FRONTEND_URL}/my-tickets`,
       supportEmail: process.env.SUPPORT_EMAIL
     })
   };

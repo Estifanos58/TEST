@@ -16,7 +16,7 @@ const sendWelcomeEmail = async (user) => {
     template: 'userRegistration',
     payload: {
       fullName: user.full_name,
-      discoverUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/discover`
+      discoverUrl: `${process.env.FRONTEND_URL}/discover`
     }
   }));
 };
@@ -26,7 +26,7 @@ const sendPasswordResetEmail = async (user, resetToken) => {
     to: user.email,
     template: 'passwordReset',
     payload: {
-      resetUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`
+      resetUrl: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
     }
   }));
 };
@@ -49,7 +49,7 @@ const sendAccountStatusEmail = async (user, status, reason = '') => {
       fullName: user.full_name,
       status,
       reason,
-      supportUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/support`
+      supportUrl: `${process.env.FRONTEND_URL}/support`
     }
   }));
 };

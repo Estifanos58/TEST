@@ -11,7 +11,7 @@ const sendTicketConfirmation = async (user, order, tickets = []) => {
       orderNumber: order.order_number,
       totalAmount: order.total_amount,
       tickets,
-      myTicketsUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/my-tickets`
+      myTicketsUrl: `${process.env.FRONTEND_URL}/my-tickets`
     }
   });
 
@@ -46,7 +46,7 @@ const sendEventReminder = async (user, event) => {
       eventDateTime: new Date(event.start_datetime).toLocaleString(),
       venueName: event.venue_name,
       city: event.city,
-      myTicketsUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/my-tickets`
+      myTicketsUrl: `${process.env.FRONTEND_URL}/my-tickets`
     }
   });
 
@@ -65,7 +65,7 @@ const sendOrganizerApproval = async (organizer, status, reason = '') => {
       fullName: organizer.full_name,
       status,
       reason,
-      dashboardUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/organizer/dashboard`
+      dashboardUrl: `${process.env.FRONTEND_URL}/organizer/dashboard`
     }
   });
 

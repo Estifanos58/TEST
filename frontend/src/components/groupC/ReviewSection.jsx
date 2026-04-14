@@ -3,7 +3,7 @@ import { Star, MessageCircle, ThumbsUp, Flag, Calendar, User } from 'lucide-reac
 import { useAuth } from '../../contexts/AuthContext';
 import { moderationAPI } from '../../api/client';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export function ReviewSection({ eventId }) {
   const { user, isAuthenticated } = useAuth();

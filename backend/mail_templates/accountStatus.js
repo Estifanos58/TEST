@@ -38,7 +38,7 @@ module.exports = ({ fullName, status, reason, supportUrl }) => {
       intro: buildIntro(status),
       bodyHtml,
       ctaLabel: 'Contact Support',
-      ctaUrl: supportUrl || `${process.env.FRONTEND_URL || 'http://localhost:5173'}/support`,
+      ctaUrl: supportUrl || `${process.env.FRONTEND_URL}/support`,
       supportEmail: process.env.SUPPORT_EMAIL
     })
   };

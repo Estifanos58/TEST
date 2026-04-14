@@ -31,7 +31,7 @@ module.exports = ({ fullName, status, reason, dashboardUrl }) => {
       intro,
       bodyHtml,
       ctaLabel: approved ? 'Open Organizer Dashboard' : 'Open Account',
-      ctaUrl: dashboardUrl || `${process.env.FRONTEND_URL || 'http://localhost:5173'}/organizer/dashboard`,
+      ctaUrl: dashboardUrl || `${process.env.FRONTEND_URL}/organizer/dashboard`,
       supportEmail: process.env.SUPPORT_EMAIL
     })
   };

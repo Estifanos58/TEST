@@ -19,7 +19,7 @@ module.exports = ({ fullName, eventName, role, eventDate, eventLocation, email, 
       intro: 'Your event access is ready. Please login and change your password after first sign in.',
       bodyHtml,
       ctaLabel: 'Login to DEMS',
-      ctaUrl: loginUrl || `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login`,
+      ctaUrl: loginUrl || `${process.env.FRONTEND_URL}/login`,
       supportEmail: process.env.SUPPORT_EMAIL
     })
   };

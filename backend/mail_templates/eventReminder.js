@@ -18,7 +18,7 @@ module.exports = ({ fullName, eventName, eventDateTime, venueName, city, myTicke
       intro: 'Your event is coming up. Here is a quick summary.',
       bodyHtml,
       ctaLabel: 'View My Tickets',
-      ctaUrl: myTicketsUrl || `${process.env.FRONTEND_URL || 'http://localhost:5173'}/my-tickets`,
+      ctaUrl: myTicketsUrl || `${process.env.FRONTEND_URL}/my-tickets`,
       supportEmail: process.env.SUPPORT_EMAIL
     })
   };

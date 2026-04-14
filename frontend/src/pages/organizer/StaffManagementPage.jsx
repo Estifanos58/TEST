@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Users, UserPlus, Shield, Calendar, Mail, Phone, Trash2, CheckCircle, XCircle, Search, UserCog, X, Lock, Send } from 'lucide-react';
 import { eventAPI } from '../../api/client';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export function StaffManagementPage() {
   const [staff, setStaff] = useState([]);

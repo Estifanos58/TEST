@@ -14,7 +14,7 @@ import {
 import { Link } from "react-router-dom";
 import { moderationAPI } from "../../api/client";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export function NotificationBell() {
   const [notifications, setNotifications] = useState([]);

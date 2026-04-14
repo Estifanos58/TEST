@@ -4,7 +4,7 @@ const { sendTemplateEmail } = require('../services/mailService');
 
 const SUPER_ADMIN_EMAIL = 'nexussphere0974@gmail.com';
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const FRONTEND_URL = process.env.FRONTEND_URL;
 const MAX_REASON_LENGTH = 255;
 
 const cleanText = (value) => (typeof value === 'string' ? value.trim() : '');

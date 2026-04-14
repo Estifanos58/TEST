@@ -20,7 +20,7 @@ module.exports = ({ fullName, discoverUrl }) => {
       intro: 'Thank you for registering. We are excited to have you on the platform.',
       bodyHtml,
       ctaLabel: 'Explore Events',
-      ctaUrl: discoverUrl || `${process.env.FRONTEND_URL || 'http://localhost:5173'}/discover`,
+      ctaUrl: discoverUrl || `${process.env.FRONTEND_URL}/discover`,
       supportEmail: process.env.SUPPORT_EMAIL
     })
   };

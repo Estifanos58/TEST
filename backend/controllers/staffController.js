@@ -95,7 +95,7 @@ const createStaff = async (req, res) => {
         eventLocation: `${event.venue_name}, ${event.city}`,
         email,
         password,
-        loginUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login`
+        loginUrl: `${process.env.FRONTEND_URL}/login`
       }
     })
       .then((result) => {

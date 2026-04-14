@@ -26,7 +26,7 @@ import { moderationAPI } from "../../api/client";
 import { useAuth } from "../../contexts/AuthContext";
 import { DashboardCsvDownloadButton } from "../../components/common/DashboardCsvDownloadButton";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export function OrganizerDashboard() {
   const { user, logout } = useAuth();

@@ -160,7 +160,7 @@ export function LandingPage() {
     const fetchPopularEvents = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/events`,
+          `${import.meta.env.VITE_API_URL}/events`,
         );
         const data = await response.json();
 

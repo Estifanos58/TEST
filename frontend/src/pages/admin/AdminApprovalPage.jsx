@@ -6,7 +6,7 @@ import {
   Search, Filter, Download, RefreshCw
 } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL;
 
 export function AdminApprovalPage() {
   const [applications, setApplications] = useState([]);

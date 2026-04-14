@@ -19,7 +19,7 @@ module.exports = ({ fullName }) => {
       intro: 'Thank you for applying as an organizer on DEMS.',
       bodyHtml,
       ctaLabel: 'View Account',
-      ctaUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login`,
+      ctaUrl: `${process.env.FRONTEND_URL}/login`,
       supportEmail: process.env.SUPPORT_EMAIL
     })
   };

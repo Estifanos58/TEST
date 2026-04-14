@@ -27,8 +27,8 @@ const initializePayment = async (paymentDetails) => {
       last_name: last_name,
       phone_number: phone_number,
       tx_ref: tx_ref,
-      callback_url: callback_url || `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/payments/chapa/callback`,
-      return_url: return_url || `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/success?tx_ref=${tx_ref}`,
+      callback_url: callback_url || `${process.env.BACKEND_URL}/api/payments/chapa/callback`,
+      return_url: return_url || `${process.env.FRONTEND_URL}/payment/success?tx_ref=${tx_ref}`,
       customization: {
         title: title.substring(0, 16),
         description: description.substring(0, 50)

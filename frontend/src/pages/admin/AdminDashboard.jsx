@@ -28,7 +28,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { adminCategoryAPI, moderationAPI } from "../../api/client";
 import { DashboardCsvDownloadButton } from "../../components/common/DashboardCsvDownloadButton";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export function AdminDashboard() {
   const { user, logout } = useAuth();

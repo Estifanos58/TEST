@@ -30,6 +30,10 @@ const adminCategoryRoutes = require("./routes/adminCategoryRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
 
 const app = express();
+const corsOrigins = (process.env.CORS_ORIGINS || process.env.FRONTEND_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 // Connect to Database
 connectDB();
@@ -38,7 +42,7 @@ connectDB();
 app.use(helmet());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"],
+    origin: corsOrigins.length ? corsOrigins : true,
     credentials: true,
   }),
 );
@@ -123,26 +127,30 @@ app.use(errorHandler);
 // Start Server
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
+  const backendUrl = process.env.BACKEND_URL
+    ? process.env.BACKEND_URL.replace(/\/+$/, "")
+    : null;
+
   console.log(`\nDEMS Backend is running!`);
-  console.log(`URL: http://localhost:${PORT}`);
-  console.log(`✅ Health check: http://localhost:${PORT}/health`);
-  console.log(`Auth API: http://localhost:${PORT}/api/auth`);
-  console.log(`Events API: http://localhost:${PORT}/api/events`);
-  console.log(`Staff API: http://localhost:${PORT}/api/staff`);
-  console.log(`Admin API: http://localhost:${PORT}/api/admin`);
-  console.log(`Notifications API: http://localhost:${PORT}/api/notifications`);
-  console.log(`⭐ Reviews API: http://localhost:${PORT}/api/reviews`);
-  console.log(
-    `Payments API (Attendee -> Organizer): http://localhost:${PORT}/api/payments`,
-  );
-  console.log(
-    `Payouts API (Organizer receives): http://localhost:${PORT}/api/payouts`,
-  );
-  console.log(
-    `Platform Fee API (Organizer -> Admin): http://localhost:${PORT}/api/platform-fee`,
-  );
-  console.log(`Categories API: http://localhost:${PORT}/api/categories`);
-  console.log(`Analytics API: http://localhost:${PORT}/api/analytics`);
+  if (backendUrl) {
+    console.log(`URL: ${backendUrl}`);
+    console.log(`✅ Health check: ${backendUrl}/health`);
+    console.log(`Auth API: ${backendUrl}/api/auth`);
+    console.log(`Events API: ${backendUrl}/api/events`);
+    console.log(`Staff API: ${backendUrl}/api/staff`);
+    console.log(`Admin API: ${backendUrl}/api/admin`);
+    console.log(`Notifications API: ${backendUrl}/api/notifications`);
+    console.log(`⭐ Reviews API: ${backendUrl}/api/reviews`);
+    console.log(`Payments API (Attendee -> Organizer): ${backendUrl}/api/payments`);
+    console.log(`Payouts API (Organizer receives): ${backendUrl}/api/payouts`);
+    console.log(
+      `Platform Fee API (Organizer -> Admin): ${backendUrl}/api/platform-fee`,
+    );
+    console.log(`Categories API: ${backendUrl}/api/categories`);
+    console.log(`Analytics API: ${backendUrl}/api/analytics`);
+  } else {
+    console.log("BACKEND_URL is not set. Set it to print absolute API URLs.");
+  }
   console.log(`Environment: ${process.env.NODE_ENV || "development"}\n`);
 });
 
