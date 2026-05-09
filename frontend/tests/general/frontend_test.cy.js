@@ -9,7 +9,7 @@
 // ─── Seed credentials ────────────────────────────────────────────────────────
 const ATTENDEE = { email: 'user1@event.com', password: 'User123!' };
 const ORGANIZER = { email: 'organizer1@event.com', password: 'Organizer123!' };
-const ADMIN = { email: 'admin@event.com', password: 'Admin123!' };
+const ADMIN = { email: 'admin1@event.com', password: 'Admin123!' };
 const PENDING = { email: 'organizer7@event.com', password: 'Organizer123!' };
 
 // ─── Helper: login via UI ─────────────────────────────────────────────────────
